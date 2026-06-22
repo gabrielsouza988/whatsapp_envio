@@ -1,6 +1,40 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrTerminal = require('qrcode-terminal');
 const path       = require('path');
+const fs         = require('fs');
+
+// Detecta o executável do Chrome/Chromium de acordo com o SO,
+// com override via variável CHROME_PATH no .env
+function detectarChrome() {
+  if (process.env.CHROME_PATH) return process.env.CHROME_PATH;
+
+  const candidatos = {
+    win32: [
+      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+      'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+      path.join(process.env.LOCALAPPDATA || '', 'Google\\Chrome\\Application\\chrome.exe'),
+    ],
+    darwin: [
+      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      '/Applications/Chromium.app/Contents/MacOS/Chromium',
+    ],
+    linux: [
+      '/usr/bin/google-chrome',
+      '/usr/bin/google-chrome-stable',
+      '/usr/bin/chromium-browser',
+      '/usr/bin/chromium',
+      '/snap/bin/chromium',
+    ],
+  };
+
+  for (const caminho of candidatos[process.platform] ?? []) {
+    if (fs.existsSync(caminho)) return caminho;
+  }
+
+  // Nenhum encontrado: deixa o Puppeteer tentar usar o Chromium embutido
+  console.warn('[WhatsApp] Chrome não encontrado automaticamente. Defina CHROME_PATH no .env se necessário.');
+  return undefined;
+}
 
 // Estado interno
 let state    = 'desconectado'; // 'desconectado' | 'aguardando_qr' | 'autenticando' | 'conectado'
@@ -17,7 +51,7 @@ const client = new Client({
   }),
   puppeteer: {
     headless: true,
-    executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    executablePath: detectarChrome(),
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
