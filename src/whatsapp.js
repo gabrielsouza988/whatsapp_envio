@@ -58,6 +58,15 @@ const client = new Client({
       '--disable-dev-shm-usage',
       '--disable-gpu',
       '--no-first-run',
+      '--disable-extensions',
+      '--disable-background-networking',
+      '--disable-default-apps',
+      '--disable-sync',
+      '--disable-translate',
+      '--hide-scrollbars',
+      '--mute-audio',
+      '--no-default-browser-check',
+      '--metrics-recording-only',
     ],
   },
 });
@@ -139,4 +148,15 @@ function initialize() {
 function getStatus()   { return { status: state, hasQr: qrString !== null }; }
 function getQrString() { return qrString; }
 
-module.exports = { client, initialize, getStatus, getQrString };
+// Chamado quando uma operação Puppeteer detecta que o contexto foi destruído
+// sem que o evento 'disconnected' tenha disparado
+function notificarContextoDestruido() {
+  if (state === 'conectado') {
+    state    = 'desconectado';
+    qrString = null;
+    console.warn('[WhatsApp] Contexto do browser destruído — forçando reconexão…');
+    agendarReconexao();
+  }
+}
+
+module.exports = { client, initialize, getStatus, getQrString, notificarContextoDestruido };
