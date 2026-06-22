@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Envio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="container header-inner">
+    <h1>WhatsApp <span class="verde">Envio</span></h1>
+    <div class="header-direita">
+      <div id="badge-status" class="badge badge-neutro">
+        <span class="dot"></span>
+        <span id="txt-status">Conectando…</span>
+      </div>
+      <button id="btn-logout" class="btn-logout" title="Sair">Sair</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- QR CODE -->
+  <section class="card" id="sec-qr" hidden>
+    <h2>Conectar WhatsApp</h2>
+    <p class="dica">
+      Abra o WhatsApp no celular →
+      <strong>Aparelhos conectados</strong> →
+      <strong>Conectar aparelho</strong>
+    </p>
+    <div class="qr-box">
+      <img id="img-qr" src="" alt="QR Code WhatsApp">
+    </div>
+  </section>
+
+  <!-- FORMULÁRIO NOVO AGENDAMENTO -->
+  <section class="card">
+    <h2>Novo Agendamento</h2>
+    <form id="form-novo" novalidate>
+
+      <label class="label" for="sel-grupo">Grupo de destino</label>
+      <select id="sel-grupo" class="input" required>
+        <option value="">Selecione um grupo…</option>
+      </select>
+
+      <label class="label" for="txt-msg">Mensagem</label>
+      <textarea id="txt-msg" class="input" rows="5" required
+        placeholder="Digite a mensagem… emojis 🎉, links e quebras de linha são preservados."></textarea>
+
+      <div class="row-2">
+        <div>
+          <label class="label" for="inp-data">Data</label>
+          <input type="date" id="inp-data" class="input" required>
+        </div>
+        <div>
+          <label class="label" for="inp-hora">Horário</label>
+          <input type="time" id="inp-hora" class="input" required>
+        </div>
+      </div>
+
+      <div id="novo-erro" class="alerta alerta-erro" hidden></div>
+      <button type="submit" class="btn btn-verde w-full" id="btn-agendar">
+        Agendar mensagem
+      </button>
+    </form>
+  </section>
+
+  <!-- LISTA DE AGENDAMENTOS -->
+  <section class="card">
+    <div class="sec-header">
+      <h2>Agendamentos</h2>
+      <button class="btn btn-ghost btn-sm" id="btn-refresh">↻ Atualizar</button>
+    </div>
+    <div id="lista"></div>
+  </section>
+
+</main>
+
+<!-- MODAL DE EDIÇÃO -->
+<dialog id="modal">
+  <form id="form-editar" novalidate>
+    <h2>Editar Agendamento</h2>
+
+    <label class="label" for="edit-grupo">Grupo de destino</label>
+    <select id="edit-grupo" class="input" required></select>
+
+    <label class="label" for="edit-msg">Mensagem</label>
+    <textarea id="edit-msg" class="input" rows="5" required></textarea>
+
+    <div class="row-2">
+      <div>
+        <label class="label" for="edit-data">Data</label>
+        <input type="date" id="edit-data" class="input" required>
+      </div>
+      <div>
+        <label class="label" for="edit-hora">Horário</label>
+        <input type="time" id="edit-hora" class="input" required>
+      </div>
+    </div>
+
+    <div id="edit-erro" class="alerta alerta-erro" hidden></div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" id="btn-cancelar">Cancelar</button>
+      <button type="submit" class="btn btn-verde">Salvar alterações</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- TOAST -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

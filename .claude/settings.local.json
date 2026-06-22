@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($env:PATH = \"C:\\\\Program Files\\\\nodejs;\" + $env:PATH; Set-Location \"C:\\\\Users\\\\ng988\\\\Projects\\\\whatsapp_envio\"; & \"C:\\\\Program Files\\\\nodejs\\\\npm.cmd\" install qrcode 2>&1)",
+      "PowerShell(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\ng988\\\\Projects\\\\whatsapp_envio\\\\src\\\\routes\")"
+    ]
+  }
+}
