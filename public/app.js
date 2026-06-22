@@ -1,8 +1,9 @@
 'use strict';
 
 // ─── ESTADO ───────────────────────────────────────────────────────────────────
-let ultimoStatus = null;   // último status do WhatsApp recebido
-let gruposCache  = [];     // lista de grupos carregados da API
+let ultimoStatus     = null;   // último status do WhatsApp recebido
+let gruposCache      = [];     // lista de grupos carregados da API
+let carregandoGrupos = false;  // impede chamadas concorrentes a /api/grupos
 let cache        = {};     // id → agendamento (para edição e exclusão por id)
 let idEdicao     = null;   // id do agendamento em edição
 let qrTimer      = null;   // intervalo de refresh do QR
@@ -115,13 +116,16 @@ async function verificarStatus() {
       qrTimer = null;
     }
 
-    // Ao conectar: carrega grupos e atualiza lista
-    if (status === 'conectado' && ultimoStatus !== 'conectado') {
+    // Captura a transição ANTES de atualizar ultimoStatus para que as próximas
+    // iterações do poll (a cada 5s) não disparem carregamentos duplicados
+    // enquanto getChats() ainda estiver em andamento no servidor.
+    const acabouDeConectar = status === 'conectado' && ultimoStatus !== 'conectado';
+    ultimoStatus = status;
+
+    if (acabouDeConectar) {
       await carregarGrupos();
       await carregarAgendamentos();
     }
-
-    ultimoStatus = status;
   } catch {
     renderBadge('desconectado');
   }
@@ -130,10 +134,16 @@ async function verificarStatus() {
 // ─── GRUPOS ───────────────────────────────────────────────────────────────────
 
 async function carregarGrupos() {
-  const { ok, data } = await api.grupos();
-  if (!ok || !Array.isArray(data)) return;
-  gruposCache = data;
-  preencherSelect(document.getElementById('sel-grupo'));
+  if (carregandoGrupos) return;
+  carregandoGrupos = true;
+  try {
+    const { ok, data } = await api.grupos();
+    if (!ok || !Array.isArray(data)) return;
+    gruposCache = data;
+    preencherSelect(document.getElementById('sel-grupo'));
+  } finally {
+    carregandoGrupos = false;
+  }
 }
 
 /**
