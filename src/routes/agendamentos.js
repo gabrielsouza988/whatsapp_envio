@@ -5,7 +5,7 @@ const whatsapp  = require('../whatsapp');
 
 // ── Constantes de validação ───────────────────────────────────────────────────
 const MAX_TEXTO    = 65_536;                   // limite prático do WhatsApp
-const RE_GROUP_ID  = /^\d+@g\.us$/;           // ex: "120363000000000001@g.us"
+const RE_GROUP_ID  = /^[\d-]+@g\.us$/;        // ex: "120363000000000001@g.us" ou "553899999999-1604672737@g.us"
 const RE_DATETIME  = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/;
 
 function validarCorpo(body, parcial = false) {
@@ -22,7 +22,7 @@ function validarCorpo(body, parcial = false) {
 
   if (!parcial || group_id !== undefined) {
     if (typeof group_id !== 'string' || !RE_GROUP_ID.test(group_id.trim())) {
-      erros.push('group_id: formato inválido. Esperado: "120363XXXX@g.us".');
+      erros.push('group_id: formato inválido. Esperado: "120363XXXX@g.us" ou "5538XXXX-XXXX@g.us".');
     }
   }
 
